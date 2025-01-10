@@ -173,6 +173,7 @@ export default {
         this.selectedAnnotation = clickedAnnotation;
       } else {
         this.selectedAnnotation = null;
+        this.showContextMenu = false;
       }
       this.loadImageToCanvas();
     },
@@ -222,10 +223,24 @@ export default {
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
 
-      this.selectedAnnotation = this.annotations.find(({ points }) => {
-        return points.some(({ x: px, y: py }) => Math.abs(px - x) < 10 && Math.abs(py - y) < 10);
-
+      const clickedAnnotation = this.annotations.find(({ points }) => {
+        // Check if click is inside the annotation
+        let inside = false;
+        for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+          const { x: xi, y: yi } = points[i];
+          const { x: xj, y: yj } = points[j];
+          const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+          if (intersect) inside = !inside;
+        }
+        return inside;
       });
+
+      if (clickedAnnotation) {
+        this.selectedAnnotation = clickedAnnotation;
+      } else {
+        this.selectedAnnotation = null;
+        this.showContextMenu = false;
+      }
 
       if (this.selectedAnnotation) {
         this.showContextMenu = true;
