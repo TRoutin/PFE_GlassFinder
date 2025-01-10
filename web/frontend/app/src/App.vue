@@ -10,6 +10,7 @@
         @mousedown="onMouseDown"
         @mousemove="onMouseMove"
         @mouseup="onMouseUp"
+        @click="onCanvasClick"
         @contextmenu.prevent="onContextMenu"
       ></canvas>
     </div>
@@ -150,6 +151,31 @@ export default {
         }
       }
     },
+    onCanvasClick(event) {
+      const canvas = this.$refs.imageCanvas;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const clickedAnnotation = this.annotations.find(({ points }) => {
+        // Check if click is inside the annotation
+        let inside = false;
+        for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+          const { x: xi, y: yi } = points[i];
+          const { x: xj, y: yj } = points[j];
+          const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      });
+
+      if (clickedAnnotation) {
+        this.selectedAnnotation = clickedAnnotation;
+      } else {
+        this.selectedAnnotation = null;
+      }
+      this.loadImageToCanvas();
+    },
     onMouseMove(event) {
       const canvas = this.$refs.imageCanvas;
       const rect = canvas.getBoundingClientRect();
@@ -198,6 +224,7 @@ export default {
 
       this.selectedAnnotation = this.annotations.find(({ points }) => {
         return points.some(({ x: px, y: py }) => Math.abs(px - x) < 10 && Math.abs(py - y) < 10);
+
       });
 
       if (this.selectedAnnotation) {
