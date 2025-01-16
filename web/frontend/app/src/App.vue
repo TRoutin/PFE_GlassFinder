@@ -181,7 +181,7 @@ export default {
 
     if (this.drawMode) {
       // Start a new quadrilateral
-      this.newAnnotation = { points: [{ x, y }, { x, y }, { x, y }, { x, y }] };
+      this.newAnnotation = { points: [{ x, y }, { x, y }, { x, y }, { x, y }]};
     } else {
       // Dragging mode: Check if a corner is being dragged
       this.draggingPoint = null;
@@ -250,15 +250,19 @@ export default {
       this.loadImageToCanvas();
     }
   },
-    onMouseUp() {
-      if (this.drawMode && this.newAnnotation) {
-        // Complete the quadrilateral
-        this.annotations.push(this.newAnnotation);
-        this.newAnnotation = null;
-        this.loadImageToCanvas();
-      }
-      this.draggingPoint = null;
-    },
+  onMouseUp() {
+    if (this.drawMode && this.newAnnotation) {
+      // Complete the quadrilateral
+      this.newAnnotation.score = 1; // Assign a score of 1 to the new annotation
+      this.annotations.push(this.newAnnotation);
+      this.newAnnotation = null;
+      this.filterAnnotations(this.$refs.scoreSlider.value || 0.6); // Re-filter annotations to include the new one if applicable
+      this.loadImageToCanvas();
+    }
+    this.draggingPoint = null;
+  },
+
+
     onContextMenu(event) {
       const { x, y } = this.getScaledCoordinates(event);
 
