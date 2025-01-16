@@ -66,10 +66,21 @@ def predict_and_linearize(model, image_data, device, threshold=0.5, target_class
             contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             linearized_contours = []
 
+            valid_prediction = True  # Flag to check if the prediction should be kept
+
             for contour in contours:
-                epsilon = 0.04 * cv2.arcLength(contour, True)
+                # Approximate contour with linear segments
+                epsilon = 0.04 * cv2.arcLength(contour, True)  # Approximation factor
                 approx = cv2.approxPolyDP(contour, epsilon, True)
-                linearized_contours.append(approx.reshape(-1, 2).tolist())
+
+                if len(approx) != 4:
+                    valid_prediction = False  # Discard the prediction if any contour has more than 4 points
+                    break
+
+                linearized_contours.append(approx.reshape(-1, 2).tolist())  # Flatten contour to list of points
+
+            if not valid_prediction:
+                continue  # Skip this prediction entirely
 
             results.append({
                 "class_id": int(labels[i]),

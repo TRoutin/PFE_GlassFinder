@@ -194,8 +194,6 @@ export default {
   },
     onCanvasClick(event) {
       const { x, y } = this.getScaledCoordinates(event);
-      const canvas = this.$refs.annotationCanvas;
-      const rect = canvas.getBoundingClientRect();
 
 
       const clickedAnnotation = this.annotations.find(({ points }) => {
@@ -254,8 +252,6 @@ export default {
       this.draggingPoint = null;
     },
     onContextMenu(event) {
-      const canvas = this.$refs.annotationCanvas;
-      const rect = canvas.getBoundingClientRect();
       const { x, y } = this.getScaledCoordinates(event);
 
 
