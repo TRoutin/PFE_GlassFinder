@@ -4,7 +4,7 @@
     <div class="main-container">
       <!-- Slider Section -->
       <div class="slider-container">
-        <ScoreSlider :default-value="0.6" @slider-change="onSliderChange" />
+        <ScoreSlider ref="scoreSlider" :default-value="0.6" @slider-change="onSliderChange" />
       </div>
 
       <!-- Image Upload and Canvas Section -->
@@ -59,6 +59,7 @@ export default {
       image: null,
       imageSrc: "",
       annotations: [], // Format: [{ points: [{ x, y }, { x, y }, { x, y }, { x, y }] }]
+      visibleAnnotations: [], // To hold filtered annotations
       isDragging: false,
       drawMode: false, // Toggle between draw and drag modes
       newAnnotation: null, // Temporary storage for new quadrilateral
@@ -74,6 +75,7 @@ export default {
       if (file) {
         this.image = file;
         this.annotations = []; // Clear existing annotations
+        this.visibleAnnotations = [...this.annotations];
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -87,16 +89,20 @@ export default {
         formData.append("file", file);
 
         axios
-          .post("http://127.0.0.1:8000/predict/?threshold=0.5&target_class_id=10", formData)
-          .then((response) => {
-            this.annotations = response.data.predictions.map(({ linearized_contours }) => {
-              return { points: linearized_contours[0].map(([x, y]) => ({ x, y })) };
-            });
-            this.loadImageToCanvas();
-          })
-          .catch((error) => {
-            console.error("Error sending image to backend:", error);
+        .post("http://127.0.0.1:8000/predict/?threshold=0&target_class_id=10", formData)
+        .then((response) => {
+          this.annotations = response.data.predictions.map(({ linearized_contours, score }) => {
+            return { 
+              points: linearized_contours[0].map(([x, y]) => ({ x, y })),
+              score // Store the score
+            };
           });
+          this.filterAnnotations(this.$refs.scoreSlider.sliderValue);
+          this.loadImageToCanvas();
+        })
+        .catch((error) => {
+          console.error("Error sending image to backend:", error);
+        });
       }
     },
     loadImageToCanvas() {
@@ -129,13 +135,24 @@ export default {
       image.src = this.imageSrc;
     },
 
+    onSliderChange(value) {
+      this.filterAnnotations(value);
+      this.loadImageToCanvas();
+    },
+
+    filterAnnotations(scoreThreshold) {
+      this.visibleAnnotations = this.annotations.filter(
+        (annotation) => annotation.score >= scoreThreshold
+      );
+    },
+
     drawAnnotations() {
       const annotationCanvas = this.$refs.annotationCanvas;
       const ctx = annotationCanvas.getContext("2d");
 
       ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
 
-      this.annotations.forEach((annotation) => {
+      this.visibleAnnotations.forEach((annotation) => {
         const { points } = annotation;
         ctx.beginPath();
         points.forEach(({ x, y }, index) => {
@@ -147,15 +164,6 @@ export default {
         ctx.strokeStyle = annotation === this.selectedAnnotation ? "blue" : "rgb(85, 255, 51)";
         ctx.stroke();
       });
-    },
-    filterAnnotations(scoreThreshold) {
-      this.visibleAnnotations = this.annotations.filter(
-        (annotation) => annotation.score >= scoreThreshold
-      );
-    },
-    onSliderChange(value) {
-      this.filterAnnotations(value);
-      this.loadImageToCanvas();
     },
 
     getScaledCoordinates(event) {
@@ -286,6 +294,7 @@ export default {
     },
     deleteAnnotation() {
       this.annotations = this.annotations.filter((annotation) => annotation !== this.selectedAnnotation);
+      this.visibleAnnotations = this.visibleAnnotations.filter((visibleAnnotations) => visibleAnnotations !== this.selectedAnnotation);
       this.selectedAnnotation = null;
       this.showContextMenu = false;
       this.loadImageToCanvas();
@@ -360,11 +369,13 @@ export default {
   },
   
   mounted() {
-  this.$nextTick(() => {
-    this.loadImageToCanvas();
-  });
-}
-
+    this.$nextTick(() => {
+      this.loadImageToCanvas();
+      // Get the initial value of the slider and filter annotations
+      const sliderValue = this.$refs.scoreSlider.value || 0.6; // Default fallback to 0.6
+      this.filterAnnotations(sliderValue);
+    });
+  },
 };
 </script>
 
