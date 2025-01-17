@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <h1>GlassFinder</h1>
+    <div class="title-container">
+      <h1>GlassFinder</h1>
+    </div>
     <div class="main-container">
       <!-- Slider Section -->
       <div class="slider-container">
@@ -10,9 +12,9 @@
       <!-- Image Upload and Canvas Section -->
       <div class="content-container">
         <!-- Upload Section -->
-        <input type="file" @change="onImageUpload" accept="image/*" />
+        <input type="file" @change="onImageUpload" accept="image/*" class="input"/>
 
-        <div class="image-container">
+        <div v-if= "imageSrc" class="image-container">
           <canvas
             ref="imageCanvas"
 
@@ -389,6 +391,7 @@ body {
   margin: 0;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -397,6 +400,17 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   color: #e0e0e0;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
 }
 
 .main-container {
@@ -419,7 +433,6 @@ body {
   align-items: center;
   justify-content: center;
   width: 70vw;
-
 }
 
 .image-container {
@@ -446,18 +459,16 @@ canvas:nth-child(1) { /* Image Canvas */
 
 canvas:nth-child(2) { /* Annotation Canvas */
   box-sizing: border-box; 
-    width: 100%; 
-    flex: none; 
-    z-index: 2;
-    margin-left: -100%; 
+  width: 100%; 
+  flex: none; 
+  z-index: 2;
+  margin-left: -100%; 
 }
 
 .context-menu {
   position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
+  background-color: none;
   z-index: 1000;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
   padding: 0.25rem;
   font-size: 0.9rem;
   color: #333;
@@ -470,6 +481,7 @@ canvas:nth-child(2) { /* Annotation Canvas */
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   margin: 0;
+  border-radius: 5px;
 }
 
 .context-menu button:hover {
@@ -484,7 +496,7 @@ canvas:nth-child(2) { /* Annotation Canvas */
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .download-button:hover {
@@ -512,6 +524,7 @@ canvas:nth-child(2) { /* Annotation Canvas */
 .toggle-button:hover {
   background-color: #1e88e5;
 }
+
 
 </style>
 

@@ -11,6 +11,10 @@ import json
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 import io
+from vp_detection import get_vp_inliers, save_visualizations
+import tempfile
+
+
 
 app = FastAPI(redirect_slashes=False)
 
@@ -107,3 +111,41 @@ async def predict(file: UploadFile = File(...), threshold: float = 0.5, target_c
         return JSONResponse(content={"predictions": results})
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.post("/detect-vanishing-points/")
+async def detect_vanishing_points(file: UploadFile = File(...),
+                                   sigma: float = 5.0,
+                                   iterations: int = 3000,
+                                   line_len: int = 11,
+                                   line_gap: int = 7,
+                                   threshold: float = 2.0):
+    try:
+        # Save uploaded file temporarily
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(await file.read())
+        temp_file.close()
+
+        # Process image
+        inlier_lines_list, hypothesis_list, image, edges, lines = get_vp_inliers(
+            temp_file.name, sigma, iterations, line_len, line_gap, threshold
+        )
+
+        # Save visualizations
+        colors = ['r', 'g', 'b']
+        visualization_path = save_visualizations(image, edges, lines, inlier_lines_list, hypothesis_list, colors)
+
+        # Prepare JSON response
+        vanishing_points = [
+            {"x": vp[0], "y": vp[1]} for vp in hypothesis_list
+        ]
+
+        response = {
+            "vanishing_points": vanishing_points,
+            "visualization_path": visualization_path
+        }
+
+        return JSONResponse(content=response)
+
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
