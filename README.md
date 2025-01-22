@@ -3,6 +3,8 @@
 ## Description du projet
 **GlassFinder** est un projet qui combine intelligence artificielle et vision par ordinateur pour détecter et segmenter les fenêtres sur des images de façades de bâtiments. En utilisant un modèles avancés comme Mask R-CNN, ainsi qu'un pipeline d'application web basé sur FastAPI et Vue.js, ce projet vise à offrir une solution puissante, précise et intuitive pour l'analyse d'images architecturales.
 
+Voici une preview de l'interface de l'application web:
+![image](interface_preview.png)
 ## Fonctionnalités principales
 - **Détection et segmentation des fenêtres** : Identification précise des contours des fenêtres avec des masques détaillés.
 - **Détection des points de fuite** : Analyse géométrique des images pour extraire les points de perspective principaux.
