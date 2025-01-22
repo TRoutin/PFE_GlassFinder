@@ -132,7 +132,6 @@ async def detect_vanishing_points(file: UploadFile = File(...),
 
         # Save visualizations
         colors = ['r', 'g', 'b']
-        visualization_path = save_visualizations(image, edges, lines, inlier_lines_list, hypothesis_list, colors)
 
         # Prepare JSON response
         vanishing_points = [
@@ -141,7 +140,6 @@ async def detect_vanishing_points(file: UploadFile = File(...),
 
         response = {
             "vanishing_points": vanishing_points,
-            "visualization_path": visualization_path
         }
 
         return JSONResponse(content=response)
