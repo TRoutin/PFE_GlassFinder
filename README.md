@@ -44,7 +44,7 @@ Assurez-vous que les outils suivants sont installés sur votre machine :
 ## Étape 1 : Cloner le dépôt
 Commencez par cloner ce dépôt GitHub :
 ```bash
-git clone [<URL_DU_DEPOT>](https://github.com/TRoutin/PFE_GlassFinder)
+git clone https://github.com/TRoutin/PFE_GlassFinder
 cd PFE_GlassFinder
 ```
 
