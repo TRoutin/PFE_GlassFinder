@@ -27,6 +27,7 @@
             @contextmenu.prevent="onContextMenu"></canvas>
         </div>
 
+
         <!-- Control Buttons -->
         <div class="control-buttons">
           <button @click="toggleDrawMode" class="toggle-button">
@@ -42,6 +43,9 @@
           <button @click="deleteAnnotation">Delete</button>
         </div>
       </div>
+      <div class="vanishing-point-container">
+            <VanishingPoint :imageFile="uploadedFile"></VanishingPoint>
+      </div>
     </div>
   </div>
 </template>
@@ -50,11 +54,14 @@
 <script>
 import axios from "axios";
 import ScoreSlider from "./components/ScoreSlider.vue";
+import VanishingPoint from "./components/VanishingPoint.vue";
+
 
 
 export default {
   components: {
     ScoreSlider,
+    VanishingPoint
   },
   data() {
     return {
@@ -69,12 +76,14 @@ export default {
       showContextMenu: false, // Display the context menu
       contextMenuStyle: {},
       draggingPoint: null, // Corner being dragged
+      uploadedFile: null, // Stocke le fichier uploadé
     };
   },
   methods: {
     onImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
+        this.uploadedFile= file;
         this.image = file;
         this.annotations = []; // Clear existing annotations
         this.visibleAnnotations = [...this.annotations];
@@ -415,6 +424,7 @@ h1 {
 
 .main-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   height: 80vh;
@@ -423,8 +433,9 @@ h1 {
 .slider-container {
   display: flex;
   justify-content: center;
-  margin-right: 20px;
+  margin-right: auto;
   height: 100%;
+  width: 10vw;
 }
 
 .content-container {
@@ -432,7 +443,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 70vw;
+  width: 65vw;
 }
 
 .image-container {
@@ -463,6 +474,13 @@ canvas:nth-child(2) { /* Annotation Canvas */
   flex: none; 
   z-index: 2;
   margin-left: -100%; 
+}
+
+.vanishing-point-container {
+  margin-left: auto; /* Aligne le composant à droite */
+  margin-top: 20px;
+  width: 20vw;
+ flex-direction: row;
 }
 
 .context-menu {
@@ -496,11 +514,13 @@ canvas:nth-child(2) { /* Annotation Canvas */
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
-  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .download-button:hover {
   background-color: #43a047;
+  margin-right: 10px;
 }
 
 .toggle-button {
@@ -524,8 +544,9 @@ canvas:nth-child(2) { /* Annotation Canvas */
 .toggle-button:hover {
   background-color: #1e88e5;
 }
-
-
+.control-buttons {
+  margin-top: 10px;
+}
 </style>
 
 
