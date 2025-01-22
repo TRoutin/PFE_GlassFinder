@@ -44,12 +44,18 @@ export default {
   flex-direction: column;
   align-items: center;
   margin-right: 20px;
+  background-color: #313030;
+  border: 1px solid #367ae0;
+  border-radius: 5px;
+
+
 }
 
 label {
   font-size: 1rem;
   color: #e0e0e0;
   margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .vertical-slider {
@@ -83,5 +89,6 @@ label {
   margin-top: 10px;
   color: #e0e0e0;
   font-size: 0.9rem;
+  margin-bottom: 20px;
 }
 </style>

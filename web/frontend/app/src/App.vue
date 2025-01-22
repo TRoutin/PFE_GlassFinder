@@ -434,7 +434,6 @@ h1 {
   display: flex;
   justify-content: center;
   margin-right: auto;
-  height: 100%;
   width: 10vw;
 }
 
@@ -449,11 +448,14 @@ h1 {
 .image-container {
   display: flex;
   flex-flow: row nowrap; 
-  border: 1px solid #374151;
+  border: 3px solid #374151;
+  border-radius: 5px;
+  padding: 20px;
   margin: 20px auto;
   max-width: 70%;
   max-height: 60%;
-  text-align: center;
+  text-align: center;    
+  background-color: #313030;
 }
 
 canvas {
