@@ -363,7 +363,7 @@ export default {
     tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
     
     // Draw annotations in green on the temp canvas
-    this.annotations.forEach((annotation) => {
+    this.visibleAnnotations.forEach((annotation) => {
       const { points } = annotation;
       tempCtx.beginPath();
       points.forEach(({ x, y }, index) => {
