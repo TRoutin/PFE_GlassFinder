@@ -72,6 +72,7 @@
     text-align: center;
     margin: auto;
     background-color: #313030;
+    border-radius: 5px;
   }
   
   .results-section {
